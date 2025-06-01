@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Aura Stone Recharger - Final Polish</title>
+    <title>Aura Stone Recharger - Balanced Audio</title>
     <style>
         :root {
             --bg-color: #0a0a12;
@@ -25,24 +25,22 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Updated body CSS for better vertical spacing */
         body {
             margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Keeps content horizontally centered */
-            justify-content: flex-start; /* Aligns content to the top of the flex container */
+            align-items: center; 
+            justify-content: flex-start; 
             min-height: 100vh;
             background-color: var(--bg-color);
-            overflow: hidden; /* Prevents scrollbars if content slightly exceeds viewport with padding */
+            overflow: hidden; 
             font-family: 'Inter', sans-serif;
-            /* Adjust padding: more on top, standard on sides/bottom */
-            padding-top: 10vh; /* Pushes content down by 10% of the viewport height. Adjust as you like (e.g., 8vh, 12vh) */
+            padding-top: 10vh; 
             padding-left: 20px;
             padding-right: 20px;
-            padding-bottom: 40px; /* Added a bit more padding at the bottom to ensure space for the reset button */
-            position: relative; /* For starfield and other absolute elements */
-            box-sizing: border-box; /* Ensures padding is included within the 100vh */
+            padding-bottom: 40px; 
+            position: relative; 
+            box-sizing: border-box; 
         }
         .ambient-stars {
             position: fixed;
@@ -69,7 +67,7 @@
             color: var(--primary-glow-color);
             font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 30px; /* Space between title and charge container */
+            margin-bottom: 30px; 
             text-shadow: 0 0 8px rgba(160, 224, 255, 0.7),
                          0 0 15px rgba(160, 224, 255, 0.5),
                          0 0 25px rgba(160, 224, 255, 0.3);
@@ -247,7 +245,7 @@
 
         .reset-button {
             position: absolute;
-            bottom: -70px; /* This positions it relative to charge-container */
+            bottom: -70px; 
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 25px;
@@ -284,7 +282,7 @@
         body.is-charging .instruction-text { opacity: 0; visibility: hidden; transition-delay: 0s; }
         body.is-charging .center-circle {
             cursor: default;
-            animation: centerPulseCharging 2s infinite ease-in-out; /* Initial animation from CSS */
+            animation: centerPulseCharging 2s infinite ease-in-out; 
         }
         body.is-recharged .particle-container,
         body.is-recharged .ring {
@@ -326,7 +324,7 @@
                             inset 0 0 15px rgba(240, 250, 255, 0.9);
             }
         }
-        @keyframes centerPulseCharging { /* This is the base, JS will override duration */
+        @keyframes centerPulseCharging { 
             0% {
                 transform: scale(1.05);
                 box-shadow: 0 0 25px 10px rgba(255, 255, 255, 1),
@@ -448,7 +446,7 @@
         <div class="instruction-text" id="instructionText">Place your stone onto the orb...</div>
         <div class="audio-error-text" id="audioErrorText"></div>
         <div class="recharged-text" id="rechargedMessage">Aura Recharged!</div>
-        <div class="aura-insight-text" id="auraInsightText"></div> {/* Comment removed */}
+        <div class="aura-insight-text" id="auraInsightText"></div>
         <button class="reset-button" id="resetButton">Recharge Another Stone</button>
     </div>
 
@@ -488,13 +486,30 @@
             function createToneSynths() {
                 if (synthsCreated) return;
                 console.log("Creating Tone.js synths...");
-                clickSound = new Tone.Synth({ oscillator: { type: 'sine' }, envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 }, volume: -10 }).toDestination();
+                clickSound = new Tone.Synth({ 
+                    oscillator: { type: 'sine' }, 
+                    envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 }, 
+                    volume: -14 // Adjusted Volume
+                }).toDestination();
+
                 chargeHum = new Tone.Loop(time => {
-                    const synth = new Tone.AMSynth({ harmonicity: 1.5, oscillator: { type: 'sine' }, envelope: { attack: 0.5, decay: 1, sustain: 0.8, release: 1 }, modulation: { type: 'square' }, modulationEnvelope: { attack: 0.5, decay: 0.01 }, volume: -25 }).toDestination();
+                    const synth = new Tone.AMSynth({ 
+                        harmonicity: 1.5, 
+                        oscillator: { type: 'sine' }, 
+                        envelope: { attack: 0.5, decay: 1, sustain: 0.8, release: 1 }, 
+                        modulation: { type: 'square' }, 
+                        modulationEnvelope: { attack: 0.5, decay: 0.01 }, 
+                        volume: -22 // Adjusted Volume
+                    }).toDestination();
                     synth.triggerAttackRelease('C2', '2n', time);
                     synth.triggerAttackRelease('G2', '2n', time + Tone.Time('4n').toSeconds());
                 }, '1n');
-                rechargeChime = new Tone.PolySynth(Tone.Synth, { oscillator: { type: 'triangle8' }, envelope: { attack: 0.02, decay: 0.8, sustain: 0.3, release: 1.5 }, volume: -8 }).toDestination();
+
+                rechargeChime = new Tone.PolySynth(Tone.Synth, { 
+                    oscillator: { type: 'triangle8' }, 
+                    envelope: { attack: 0.02, decay: 0.8, sustain: 0.3, release: 1.5 }, 
+                    volume: -14 // Adjusted Volume
+                }).toDestination();
                 rechargeChime.set({ "detune": -1200, "portamento": 0.05 });
                 synthsCreated = true;
                 console.log("Tone.js synths created.");
