@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Aura Stone Recharger - Balanced Audio</title>
+    <title>Aura Stone Recharger - Haptic Enhanced</title>
     <style>
         :root {
             --bg-color: #0a0a12;
@@ -483,13 +483,24 @@
             let clickSound, chargeHum, rechargeChime;
             let speedUpTimeout1, speedUpTimeout2;
 
+            // Haptic Feedback Helper Function
+            function triggerHapticFeedback(pattern) {
+                if ('vibrate' in navigator) {
+                    try {
+                        navigator.vibrate(pattern);
+                    } catch (e) {
+                        console.warn("Haptic feedback trigger failed:", e);
+                    }
+                }
+            }
+
             function createToneSynths() {
                 if (synthsCreated) return;
                 console.log("Creating Tone.js synths...");
                 clickSound = new Tone.Synth({ 
                     oscillator: { type: 'sine' }, 
                     envelope: { attack: 0.01, decay: 0.2, sustain: 0.1, release: 0.3 }, 
-                    volume: -14 // Adjusted Volume
+                    volume: -14 
                 }).toDestination();
 
                 chargeHum = new Tone.Loop(time => {
@@ -499,7 +510,7 @@
                         envelope: { attack: 0.5, decay: 1, sustain: 0.8, release: 1 }, 
                         modulation: { type: 'square' }, 
                         modulationEnvelope: { attack: 0.5, decay: 0.01 }, 
-                        volume: -22 // Adjusted Volume
+                        volume: -22 
                     }).toDestination();
                     synth.triggerAttackRelease('C2', '2n', time);
                     synth.triggerAttackRelease('G2', '2n', time + Tone.Time('4n').toSeconds());
@@ -508,7 +519,7 @@
                 rechargeChime = new Tone.PolySynth(Tone.Synth, { 
                     oscillator: { type: 'triangle8' }, 
                     envelope: { attack: 0.02, decay: 0.8, sustain: 0.3, release: 1.5 }, 
-                    volume: -14 // Adjusted Volume
+                    volume: -14 
                 }).toDestination();
                 rechargeChime.set({ "detune": -1200, "portamento": 0.05 });
                 synthsCreated = true;
@@ -567,6 +578,7 @@
                     console.log("Already charging or recharged, exiting.");
                     return;
                 }
+                triggerHapticFeedback(30); // Haptic: Initial orb tap
 
                 const audioReady = await initializeAudio();
                 if (!audioReady) {
@@ -590,11 +602,12 @@
                 instructionText.classList.add('visible');
                 console.log("Instruction text shown.");
 
-                setTimeout(() => {
+                setTimeout(() => { // Delay for "placing the stone"
                     if (!isCharging) {
                         console.log("Charging aborted during 'place stone' delay.");
                         return;
                     }
+                    triggerHapticFeedback([80, 40, 80]); // Haptic: Charging phase begins
 
                     instructionText.classList.remove('visible');
                     instructionText.classList.add('hidden');
@@ -616,6 +629,7 @@
                         if (bodyElement.classList.contains('is-charging')) {
                             chargeTrigger.style.animation = 'centerPulseCharging 1.0s infinite ease-in-out';
                             console.log("Orb pulse speed increased (1.0s duration).");
+                            triggerHapticFeedback(20); // Haptic: Orb speed up 1
                         }
                     }, 4000); 
 
@@ -623,11 +637,14 @@
                         if (bodyElement.classList.contains('is-charging')) {
                             chargeTrigger.style.animation = 'centerPulseCharging 0.5s infinite ease-in-out';
                             console.log("Orb pulse speed increased (0.5s duration).");
+                            triggerHapticFeedback(25); // Haptic: Orb speed up 2
                         }
                     }, 7000); 
 
-                    chargingTimeout = setTimeout(() => {
+                    chargingTimeout = setTimeout(() => { // Main charging period
                         console.log("Charging timeout reached. Transitioning to recharged state.");
+                        triggerHapticFeedback([100, 50, 100, 50, 100]); // Haptic: Aura Recharged!
+                        
                         bodyElement.classList.remove('is-charging');
                         bodyElement.classList.add('is-recharged');
                         chargeTrigger.style.animation = ''; 
@@ -662,6 +679,8 @@
 
             resetButton.addEventListener('click', () => {
                 console.log("Reset button clicked.");
+                triggerHapticFeedback(30); // Haptic: Reset button tap
+                
                 clearTimeout(chargingTimeout);
                 isCharging = false;
 
